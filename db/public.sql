@@ -1,13 +1,40 @@
 -- Active: 1705366687777@@127.0.0.1@5432@api_registroestudiante@public
 CREATE DATABASE Api_RegistroEstudiante
 
-create table tbl_estudiante
+create table tbl_rol 
 (
-    id serial primary key, 
+    id serial PRIMARY key,
+    nombre_rol varchar(200), 
+    fecha_creacion TIMESTAMP DEFAULT current_timestamp, 
+    activo BOOLEAN DEFAULT true
+);
+
+drop table tbl_usuarios;
+create table tbl_usuarios 
+(
+    nombre_usuario  varchar(20) primary key,
+    correo_electronico varchar(50),
+    contrasena varchar(20),
     nombre varchar(200),
+    apellido varchar(200),
+    foto_perfil bytea,
+    id_rol int,
+    fecha_creacion TIMESTAMP DEFAULT current_timestamp, 
+    activo BOOLEAN DEFAULT true, 
+    constraint fk_id_rol FOREIGN key (id_rol) REFERENCES tbl_rol (id)
+);
+
+select * from tbl_usuarios;
+
+CREATE TABLE tbl_estudiante
+(
+    id SERIAL PRIMARY KEY, 
+    nombre VARCHAR(200),
     estudiante_id NUMERIC,
-    creado TIMESTAMP DEFAULT current_timestamp 
-)
+    imagen BYTEA,
+    creado TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);
+
 
 create table tbl_docente
 (
@@ -42,4 +69,4 @@ CREATE TABLE tbl_matricula (
 );
 
 
-DROP TABLE tbl_matricula;
+DROP TABLE tbl_estudiante;

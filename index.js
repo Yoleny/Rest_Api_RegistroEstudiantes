@@ -1,27 +1,52 @@
 //const express = require('express');
-import express from 'express';
-import { estudiante } from './Rutas/apiEstudiante.js'
-import { docente } from './Rutas/apiDocente.js';
-import { asignatura} from './Rutas/apiAsignatura.js';
-import { notas} from './Rutas/apiNotas.js';
-import { matricula } from './Rutas/apiMatricula.js';
+import  Express  from "express";
+const app = Express();
+import { estudiante } from './Rutas/apiEstudiante.js';
+import { usuario } from './Rutas/routeUser.js';
 
+import cors from 'cors';
 
-const app = express();
-
-//middlewares 
-
-app.use(express.json());
-
-const port = 3000;
+// Middleware 
+app.use(Express.json());
+const corsOptions = {
+    origin : 'http://localhost:5173', 
+    credentials : true,
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}
+app.use(cors(corsOptions));
+// Rutas
+app.use('/api/usuario', usuario);
 app.use('/api/estudiante', estudiante);
-app.use('/api/docente', docente);
-app.use('/api/asignatura', asignatura);
-app.use('/api/notas', notas);
-app.use("/api/matricula", matricula);
 
 
-app.listen(port, ()=>{
 
-    console.log(`Escuchando en el puerto ${port} `);
+app.listen(4000, ()=>{
+
+    console.log("Esuchando en el puerto 4000");
+
+});
+import multer from 'multer';
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.').pop());
+    }
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/estudiantes/imagen', upload.single('imagen'), function (req, res, next) {
+  // El archivo se ha cargado con éxito
+  res.json({
+    nombre: req.file.filename
+  });
+});
+
+app.get('/estudiantes/imagen/:nombre', function (req, res, next) {
+    const fileName = req.params.nombre;
+    res.sendFile(`${__dirname}/uploads/${fileName}`);
 });
